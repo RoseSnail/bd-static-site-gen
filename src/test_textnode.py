@@ -1,5 +1,6 @@
 import unittest
 from textnode import TextNode, TextType
+from leafnode import LeafNode
 
 # Available tests
 ####
@@ -33,8 +34,8 @@ class TestTextNode(unittest.TestCase):
     self.assertEqual(node, node2)
 
   def test_eq_1(self):
-    node = TextNode("This is a text node", TextType.PLAIN)
-    node2 = TextNode("This is a text node", TextType.PLAIN, None)
+    node = TextNode("This is a text node", TextType.TEXT)
+    node2 = TextNode("This is a text node", TextType.TEXT, None)
     self.assertEqual(node, node2)
 
   def test_eq_2(self):
@@ -43,8 +44,8 @@ class TestTextNode(unittest.TestCase):
     self.assertEqual(node, node2)
     
   def test_eq_3(self):
-    node = TextNode("This is a text node", TextType.PLAIN, "https://www.test.com")
-    node_str = "TextNode(This is a text node, plain, https://www.test.com)"
+    node = TextNode("This is a text node", TextType.TEXT, "https://www.test.com")
+    node_str = "TextNode(This is a text node, text, https://www.test.com)"
     self.assertEqual(str(node), node_str)
     
   def test_not_eq(self):
@@ -59,7 +60,7 @@ class TestTextNode(unittest.TestCase):
     
   def test_not_eq_2(self):
     node = TextNode("This is a text node", TextType.BOLD, "https://www.test.com")
-    node2 = TextNode("This is a text node", TextType.PLAIN, "https://www.test.com")
+    node2 = TextNode("This is a text node", TextType.TEXT, "https://www.test.com")
     self.assertNotEqual(node, node2)
     
   def test_not_eq_3(self):
@@ -71,6 +72,25 @@ class TestTextNode(unittest.TestCase):
     node = TextNode("This is a text node", TextType.BOLD, "https://www.test.com")
     node_str = "TextNode(This is a text node, TextType.BOLD, https://www.test.com)"
     self.assertNotEqual(str(node), node_str)
+
+  def test_text(self):
+    node = TextNode("This is a text node", TextType.TEXT)
+    html_node = TextNode.text_node_to_html_node(node)
+    self.assertEqual(html_node.tag, None)
+    self.assertEqual(html_node.value, "This is a text node")
+    
+  def test_text1(self):
+    node = TextNode("This is an image node", TextType.IMAGE, "http://imageurl.png")
+    html_node = node.to_html_node()
+    self.assertEqual(html_node.tag, "img")
+    self.assertEqual(html_node.props_to_html(), ' src="http://imageurl.png" alt="This is an image node"')
+
+  def test_text2(self):
+    node = TextNode("This is a link node", TextType.LINK, "http://linkurl.com")
+    html_node = node.to_html_node()
+    self.assertEqual(html_node.tag, "a")
+    self.assertEqual(html_node.value, "This is a link node")
+    self.assertEqual(html_node.props_to_html(), ' href="http://linkurl.com"')
 
 if __name__ == "__main__":
   unittest.main()
