@@ -76,12 +76,21 @@ def block_to_html_node(block:str, block_type: BlockType) -> ParentNode:
     
     case BlockType.QUOTE:
       return ParentNode(BlockTag.QUOTE.value, text_to_leaf_nodes(block.replace("\n>", "\n")))
-    #TODO
+
     case BlockType.UNORDERED_LIST:
-      return ParentNode(BlockTag.QUOTE.value, text_to_leaf_nodes(block.replace("\n>", "\n")))
-    #TODO
+      items = []
+      for list_item in block[2:].split(f"\n{BlockTypeMarkdown.UNORDERED_LIST.value} "):
+        items.append(ParentNode(BlockTag.UNORDERED_ITEM.value, text_to_leaf_nodes(list_item)))
+      return ParentNode(BlockTag.UNORDERED_LIST.value, items)
+
     case BlockType.ORDERED_LIST:
-      return ParentNode(BlockTag.QUOTE.value, text_to_leaf_nodes(block.replace("\n>", "\n")))
+      items = []
+      i = 1
+      for list_item in block.split("\n"):
+        count = 2 + len(str(i))
+        i += 1
+        items.append(ParentNode(BlockTag.ORDERED_ITEM.value, text_to_leaf_nodes(list_item[count:])))
+      return ParentNode(BlockTag.ORDERED_LIST.value, items)
   raise ValueError("BlockType not valid")
 
 def text_to_leaf_nodes(text: str) -> list[LeafNode]:

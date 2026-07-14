@@ -92,10 +92,10 @@ This is a code block
 
   def test_block_to_block_type_ordered_list(self):
     md = """
-90. Testing
-1. This is an ordered list block
-7. with these
-1057. random items
+1. Testing
+2. This is an ordered list block
+3. with these
+4. items
 """
     type = block_to_block_type(md)
     self.assertEqual(type, BlockType.ORDERED_LIST)
