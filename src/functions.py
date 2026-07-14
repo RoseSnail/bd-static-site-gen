@@ -60,11 +60,11 @@ def block_to_html_node(block:str, block_type: BlockType) -> ParentNode:
       count = 1
       counting = True
       while counting:
-        if block[count] == BlockTypeMarkdown.HEADING:
+        if block[count] == BlockTypeMarkdown.HEADING.value:
           count += 1
         else:
           counting = False
-      return ParentNode(f"{BlockTag.HEADING.value}{count}", text_to_leaf_nodes(block[count:].replace("\n", " ")))
+      return ParentNode(f"{BlockTag.HEADING.value}{count}", text_to_leaf_nodes(block[count:].strip()))
     
     case BlockType.CODE:
       #print("COOOOOOODE")
@@ -75,7 +75,9 @@ def block_to_html_node(block:str, block_type: BlockType) -> ParentNode:
       return ParentNode(BlockTag.CODE_OUTER.value, inner)
     
     case BlockType.QUOTE:
-      return ParentNode(BlockTag.QUOTE.value, text_to_leaf_nodes(block.replace("\n>", "\n")))
+      #print("-------BLOCK QUOTE---------")
+      #print(block[1:].replace("\n>", "\n").strip())
+      return ParentNode(BlockTag.QUOTE.value, text_to_leaf_nodes(block[1:].replace("\n>", "\n").strip()))
 
     case BlockType.UNORDERED_LIST:
       items = []
