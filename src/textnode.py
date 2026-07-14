@@ -11,16 +11,16 @@ class Bender(Enum):
 
 
 class TextTypeMarkdown(Enum):
-  PLAIN = ""      # text (plain)
-  BOLD = "**"     # **Bold text**
-  ITALIC = "_"    # _Italic text_
-  CODE = "`"      # `Code text`
-  LINK = "["      # [anchor text](url)
-  IMAGE = "!["    # ![alt text](url)
+  PLAIN = ""        # text (plain)
+  BOLD = "**"       # **Bold text**
+  ITALIC = "_"      # _Italic text_
+  CODE = "`"        # `Code text`
+  LINK = "[]()"     # [anchor text](url)
+  IMAGE = "![]()"   # ![alt text](url)
 
 class TextType(Enum):
   TEXT = "text"     # text (plain)
-  BOLD = "*bold"    # **Bold text**
+  BOLD = "bold"    # **Bold text**
   ITALIC = "italic" # _Italic text_
   CODE = "code"     # `Code text`
   LINK = "link"     # [anchor text](url)
@@ -41,7 +41,8 @@ class TextNode():
     )
   
   def __repr__(self) -> str:
-    return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
+    url = f', "{self.url}"' if self.url else ''
+    return f'TextNode("{self.text}", {self.text_type}{url})'
   
   def to_html_node(self) -> LeafNode:
     match self.text_type:

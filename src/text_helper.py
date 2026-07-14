@@ -1,5 +1,5 @@
 import re
-from textnode import TextNode, TextType
+from textnode import TextNode, TextType, TextTypeMarkdown
 
 
 def split_nodes_delimiter(old_nodes: list[TextNode], delimiter: str, text_type: TextType) -> list[TextNode]:
@@ -73,3 +73,14 @@ def split_nodes_link(old_nodes: list[TextNode]) -> list[TextNode]:
       split_nodes.append(TextNode(to_split, node.text_type))
   #print(split_nodes)
   return split_nodes
+
+
+def text_to_textnodes(text: str) -> list[TextNode]:
+  #print(text)
+  nodes = split_nodes_delimiter([TextNode(text, TextType.TEXT)], TextTypeMarkdown.BOLD.value, TextType.BOLD)
+  nodes = split_nodes_delimiter(nodes, TextTypeMarkdown.ITALIC.value, TextType.ITALIC)
+  nodes = split_nodes_delimiter(nodes, TextTypeMarkdown.CODE.value, TextType.CODE)
+  nodes = split_nodes_image(nodes)
+  nodes = split_nodes_link(nodes)
+  #print(nodes)
+  return nodes

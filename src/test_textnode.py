@@ -45,7 +45,7 @@ class TestTextNode(unittest.TestCase):
     
   def test_eq_3(self):
     node = TextNode("This is a text node", TextType.TEXT, "https://www.test.com")
-    node_str = "TextNode(This is a text node, text, https://www.test.com)"
+    node_str = 'TextNode("This is a text node", TextType.TEXT, "https://www.test.com")'
     self.assertEqual(str(node), node_str)
     
   def test_not_eq(self):
