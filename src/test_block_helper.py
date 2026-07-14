@@ -45,7 +45,8 @@ This is a parapgraph
 
     
   def test_block_to_block_type_heading(self):
-    md = """###### This is a heading
+    md = """
+###### This is a heading
 - with a bunch of incorrect formatting
 ### thus forcing it into this junk collection
 > Of Garbage
@@ -55,38 +56,46 @@ This is a parapgraph
     
 
   def test_block_to_block_type_code(self):
-    md = """```
+    md = """
+```
 This is a code block
 - with a bunch of incorrect formatting
 ### thus forcing it into this junk collection
 > Of Garbage
-```"""
+```
+"""
     type = block_to_block_type(md)
     self.assertEqual(type, BlockType.CODE)
 
 
   def test_block_to_block_type_quote(self):
-    md = """> This whole set
+    md = """
+> This whole set
 >> This is a quote block
 > > it entirely works as a quote block
->>"""
+>>
+"""
     type = block_to_block_type(md)
     self.assertEqual(type, BlockType.QUOTE)
 
 
   def test_block_to_block_type_unordered_list(self):
-    md = """- Testing
+    md = """
+- Testing
 - This is an unordered list block
 - with these
-- items"""
+- items
+"""
     type = block_to_block_type(md)
     self.assertEqual(type, BlockType.UNORDERED_LIST)
 
 
   def test_block_to_block_type_ordered_list(self):
-    md = """90. Testing
+    md = """
+90. Testing
 1. This is an ordered list block
 7. with these
-1057. random items"""
+1057. random items
+"""
     type = block_to_block_type(md)
     self.assertEqual(type, BlockType.ORDERED_LIST)

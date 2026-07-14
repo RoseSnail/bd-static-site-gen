@@ -21,6 +21,8 @@ class BlockType(Enum):
 
 
 def markdown_to_blocks(document: str) -> list[str]:
+  if document[0] == "\n" and document[1] != "\n":
+    document = document[1:]
   blocks = []
   split_doc = document.split("\n\n")
   for i in range(len(split_doc)):
@@ -30,6 +32,8 @@ def markdown_to_blocks(document: str) -> list[str]:
   return blocks
 
 def block_to_block_type(markdown:str) -> BlockType:
+  if markdown[0] == "\n":
+    markdown = markdown[1:]
   match markdown[0]:
     case BlockTypeMarkdown.HEADING.value:
       length = min(7, len(markdown))
@@ -43,11 +47,13 @@ def block_to_block_type(markdown:str) -> BlockType:
           break
   
     case BlockTypeMarkdown.CODE.value:
-      if markdown[:4] == "```\n" and markdown[-3:] == "```":
+      if markdown[:4] == "```\n" and (markdown[-3:] == "```" or markdown[-4:] == "```\n"):
         return BlockType.CODE
       
     case BlockTypeMarkdown.QUOTE.value:
       split_test = markdown.split('\n')
+      if len(split_test[-1]) == 0 or split_test[-1] == '\n':
+        split_test.pop(-1)
       for test in split_test:
         if len(test) < 1 or test[0] != BlockTypeMarkdown.QUOTE.value:
           return BlockType.PARAGRAPH
@@ -55,6 +61,8 @@ def block_to_block_type(markdown:str) -> BlockType:
 
     case BlockTypeMarkdown.UNORDERED_LIST.value:
       split_test = markdown.split('\n')
+      if len(split_test[-1]) == 0 or split_test[-1] == '\n':
+        split_test.pop(-1)
       for test in split_test:
         if len(test) < 2 or test[:2] != f"{BlockTypeMarkdown.UNORDERED_LIST.value} ":
           return BlockType.PARAGRAPH

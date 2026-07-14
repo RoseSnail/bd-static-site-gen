@@ -84,3 +84,9 @@ class TextNode():
           raise ValueError("invalid URL")
         return LeafNode("img", "", {"src": text_node.url, "alt":text_node.text})
     raise Exception("TextType not found")  
+
+  def text_nodes_to_html_nodes(text_nodes: list['TextNode']) -> list[LeafNode]:
+    leaves = []
+    for node in text_nodes:
+      leaves.append(node.to_html_node())
+    return leaves
