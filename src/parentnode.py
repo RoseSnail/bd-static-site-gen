@@ -1,4 +1,3 @@
-from operator import index
 
 from htmlnode import HTMLNode
 

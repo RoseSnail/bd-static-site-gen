@@ -1,7 +1,6 @@
-from platform import node
 import unittest
 from textnode import TextNode, TextType
-from text_helper import *
+from inline_helper import *
 
 
 class TestTextHelper(unittest.TestCase):
