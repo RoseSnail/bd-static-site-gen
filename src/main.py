@@ -24,16 +24,16 @@ def copy_dir_contents(source: str, destination: str):
   contents = os.listdir(source)
   #print(contents)
   for content in contents:
-    sourcepath = f"{source}/{content}"
-    destinationpath = f"{destination}/{content}"
-    if os.path.isfile(sourcepath):
+    source_path = f"{source}/{content}"
+    destination_path = f"{destination}/{content}"
+    if os.path.isfile(source_path):
       #print(f"File: {content}")
-      shutil.copy(sourcepath, destinationpath)
-    elif os.path.isdir(sourcepath):
+      shutil.copy(source_path, destination_path)
+    elif os.path.isdir(source_path):
       #print(f"Dir: {content}")
-      copy_dir_contents(sourcepath, destinationpath)
+      copy_dir_contents(source_path, destination_path)
     else:
-      print(f"Unknown: {sourcepath}")
+      print(f"Unknown: {source_path}")
 
 
 def extract_title(markdown:str) -> str:
@@ -44,7 +44,7 @@ def extract_title(markdown:str) -> str:
   raise Exception("No title found")
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str):
+def generate_page(from_path: str, template_path: str, dest_path: str) -> int:
   print(f"Generating page from {from_path} to {dest_path} using {template_path}")
   if not os.path.isfile(from_path) or from_path[-3:] != ".md":
     raise Exception("markdown filepath is not a valid .md file")
@@ -84,14 +84,42 @@ def generate_page(from_path: str, template_path: str, dest_path: str):
     os.makedirs(dest_path[:-f_length])
 
   # Write updated template to destination filepath
+  written_chars = 0
   with open(dest_path, "w") as file:
-    file.write(template)
+    written_chars = file.write(template)
+  return written_chars
+  
+  
+def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str) -> int:
+  count = 0
+
+  if not os.path.exists(dest_dir_path):
+    os.makedirs(dest_dir_path)
+  contents = os.listdir(dir_path_content)
+  #print(contents)
+  for content in contents:
+    source_path = f"{dir_path_content}/{content}"
+    destination_path = f"{dest_dir_path}/{content}"
+    if os.path.isfile(source_path) and source_path[-3:] == ".md":
+      #print(f"File: {content}")
+      #shutil.copy(source_path, destination_path)
+      count += generate_page(source_path, template_path, f"{destination_path[:-3]}.html")
+    elif os.path.isdir(source_path):
+      #print(f"Dir: {content}")
+      #copy_dir_contents(source_path, destination_path)
+      count += generate_pages_recursive(source_path, template_path, destination_path)
+    else:
+      print(f"Unknown: {source_path}")
+  
+  return count
   
 
 
 def main():
   copy_contents_from_to('static', 'public')
-  generate_page('content/index.md', 'template.html', 'public/index.html')
+  #count = generate_page('content/index.md', 'template.html', 'public/index.html')
+  count = generate_pages_recursive('content', 'template.html', 'public')
+  print(f"generated {count} characters")
   #node = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
   #print(node)
 
