@@ -1,5 +1,4 @@
-import os
-import shutil
+import os, shutil, sys
 from functions import markdown_to_html_node
 from textnode import TextNode, TextType
 
@@ -44,7 +43,7 @@ def extract_title(markdown:str) -> str:
   raise Exception("No title found")
 
 
-def generate_page(from_path: str, template_path: str, dest_path: str) -> int:
+def generate_page(from_path: str, template_path: str, dest_path: str, basepath: str = "/") -> int:
   print(f"Generating page from {from_path} to {dest_path} using {template_path}")
   if not os.path.isfile(from_path) or from_path[-3:] != ".md":
     raise Exception("markdown filepath is not a valid .md file")
@@ -67,9 +66,10 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> int:
   #print(node_string)
 
   #title = extract_title(contents)
-  template = template.replace("{{ Title }}", extract_title(contents)).replace("{{ Content }}", node.to_html())
-  #template = template.replace("{{ Title }}", title)
-  #template = template.replace("{{ Content }}", node.to_html())
+  template = template.replace("{{ Title }}", extract_title(contents))
+  template = template.replace("{{ Content }}", node.to_html())
+  template = template.replace('href="/', f'href="{basepath}')
+  template = template.replace('src="/', f'src="{basepath}')
   #print("-------\\\\--Updated-Template--//-------")
   #print(template)
   
@@ -90,7 +90,7 @@ def generate_page(from_path: str, template_path: str, dest_path: str) -> int:
   return written_chars
   
   
-def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str) -> int:
+def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir_path: str, basepath: str = "/") -> int:
   count = 0
 
   if not os.path.exists(dest_dir_path):
@@ -103,11 +103,11 @@ def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir
     if os.path.isfile(source_path) and source_path[-3:] == ".md":
       #print(f"File: {content}")
       #shutil.copy(source_path, destination_path)
-      count += generate_page(source_path, template_path, f"{destination_path[:-3]}.html")
+      count += generate_page(source_path, template_path, f"{destination_path[:-3]}.html", basepath)
     elif os.path.isdir(source_path):
       #print(f"Dir: {content}")
       #copy_dir_contents(source_path, destination_path)
-      count += generate_pages_recursive(source_path, template_path, destination_path)
+      count += generate_pages_recursive(source_path, template_path, destination_path, basepath)
     else:
       print(f"Unknown: {source_path}")
   
@@ -116,9 +116,14 @@ def generate_pages_recursive(dir_path_content: str, template_path: str, dest_dir
 
 
 def main():
-  copy_contents_from_to('static', 'public')
+  args = sys.argv
+  basepath = args[1] if len(args) > 1 else "/"
+  #print(basepath)
+
+  #shutil.rmtree("public")
+  copy_contents_from_to('static', 'docs')
   #count = generate_page('content/index.md', 'template.html', 'public/index.html')
-  count = generate_pages_recursive('content', 'template.html', 'public')
+  count = generate_pages_recursive('content', 'template.html', 'docs', basepath)
   print(f"generated {count} characters")
   #node = TextNode("This is some anchor text", TextType.LINK, "https://www.boot.dev")
   #print(node)
